@@ -7,6 +7,8 @@ const connectDB = async (retries = 3) => {
     try {
       const conn = await mongoose.connect(uri, {
         serverSelectionTimeoutMS: 5000,
+        maxPoolSize: 50,
+        wtimeoutMS: 2500,
       });
       console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
       return;

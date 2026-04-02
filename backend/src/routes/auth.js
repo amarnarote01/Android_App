@@ -22,8 +22,32 @@ router.post('/send-otp', async (req, res) => {
         user.otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
         await user.save();
 
-        // In production, send OTP via SMS/Email service
-        console.log(`📱 OTP for ${phone}: ${otp}`);
+        // In production, send OTP via Fast2SMS
+        if (process.env.FAST2SMS_API_KEY) {
+            const axios = require('axios');
+            const options = {
+                method: 'POST',
+                url: 'https://www.fast2sms.com/dev/bulkV2',
+                headers: {
+                    'authorization': process.env.FAST2SMS_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    variables_values: otp,
+                    route: 'otp',
+                    numbers: phone,
+                }
+            };
+            try {
+                await axios(options);
+                console.log(`✉️ SMS OTP sent to ${phone}`);
+            } catch (smsError) {
+                console.error(`❌ Failed to send SMS to ${phone}:`, smsError.response?.data || smsError.message);
+                // Optionally throw an error here, but for now we continue
+            }
+        } else {
+            console.log(`📱 (DEV) OTP for ${phone}: ${otp}`);
+        }
 
         res.json({ message: 'OTP sent successfully', phone });
     } catch (error) {
