@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 // Change this to your Render.com URL in production
 const API_BASE = __DEV__ 
     ? 'http://10.22.231.66:5000/api'
-    : 'https://emigroup-backend.onrender.com/api';
+    : 'https://android-app-js8f.onrender.com/api';
 
 const api = axios.create({
     baseURL: API_BASE,
